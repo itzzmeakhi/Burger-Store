@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { connect } from 'react-redux';
+
 import Button from './../../Button/Button.component';
 import axiosInstance from './../../../axios-orders.component';
 import Spinner from './../../Spinner/Spinner.component';
@@ -22,6 +24,7 @@ class ContactData extends Component {
                 validation : {
                     required : true
                 },
+                touched : false,
                 valid : false
             },
             email : {
@@ -34,6 +37,7 @@ class ContactData extends Component {
                 validation : {
                     required : true
                 },
+                touched : false,
                 valid : false
             },
             street : {
@@ -46,6 +50,7 @@ class ContactData extends Component {
                 validation : {
                     required : true
                 },
+                touched : false,
                 valid : false
             },
             country : {
@@ -58,6 +63,7 @@ class ContactData extends Component {
                 validation : {
                     required : true
                 },
+                touched : false,
                 valid : false
             },
             zipcode : {
@@ -71,6 +77,7 @@ class ContactData extends Component {
                     required : true,
                     minLength : 5
                 },
+                touched : false,
                 valid : false
             },
             deliveryType : {
@@ -83,6 +90,7 @@ class ContactData extends Component {
                 },
                 value : '',
                 validation : {},
+                touched : false,
                 valid : true
             }
         },
@@ -124,6 +132,7 @@ class ContactData extends Component {
             ...this.state.orderForm[inputElement]
         };
         updatedFormElement.value = event.target.value;
+        updatedFormElement.touched = true;
         updatedFormElement.valid = this.checkValidity(updatedFormElement.validation, updatedFormElement.value);
         updatedForm[inputElement] = updatedFormElement;
         this.setState({orderForm : updatedForm});
@@ -131,14 +140,14 @@ class ContactData extends Component {
 
     checkValidity = (rules, value) => {
 
-        let isValid = true;
+        let isValid = false;
 
         if(!rules) {
             return true;
         }
 
         if(rules.required) {
-            isValid = value.trim() === '' && isValid
+            isValid = value.trim() !== '';
         }
 
         return isValid;
@@ -162,7 +171,8 @@ class ContactData extends Component {
                         elementConfig = {formElement.config.elementConfig}
                         key = {formElement.id}
                         value = {formElement.config.value} 
-                        invalid = {formElement.config.valid}
+                        touched = {formElement.config.touched}
+                        invalid = {!formElement.config.valid}
                         shouldValidate = {formElement.config.validation}
                         changed = {(event) => {this.inputChangeHandler(event, formElement.id)}}/>
                 ))}
@@ -183,4 +193,11 @@ class ContactData extends Component {
 
 }
 
-export default ContactData;
+const mapStateToProps = state => {
+    return {
+        ingredients : state.ingredients,
+        totalPrice : state.totalPrice
+    }
+};
+
+export default connect(mapStateToProps)(ContactData);
